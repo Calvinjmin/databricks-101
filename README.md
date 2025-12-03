@@ -13,7 +13,6 @@ Learn the Medallion Architecture through hands-on practice:
 * 📊 **Data Quality**: Validation, deduplication, and data cleansing
 * 🔄 **ETL Pipelines**: PySpark patterns for loading and transforming data
 * 📈 **Business Analytics**: Aggregations, metrics, and reporting tables
-* ⚡ **Best Practices**: Production-ready patterns for real-world use
 
 
 ## 🛠️ Getting Started
@@ -166,14 +165,12 @@ ORDER BY total_revenue DESC;
 1. Review the SQL-based transformations in the main pipeline (look for `%sql` cells)
 2. Compare traditional database patterns to Delta Lake
 3. Explore the advanced joins and aggregations in the Gold layer
-4. Study `src/best_practices.ipynb` for production patterns
 
 ### For Python/PySpark Developers
 
 1. Review the PySpark CSV loading pattern and Volume integration in Bronze layer
 2. Study DataFrame transformations in Silver layer
 3. Experiment with custom aggregations in Gold layer
-4. Explore advanced patterns in `src/best_practices.ipynb`
 
 ---
 
@@ -263,7 +260,6 @@ After completing this workshop:
 3. **Add ML**: Build machine learning models on your clean data
 4. **Optimize**: Study advanced performance tuning and cost optimization
 5. **Production**: Learn about CI/CD, testing, and monitoring for data pipelines
-6. **Check Best Practices**: Open `best_practices.ipynb` for production patterns
 
 ---
 
