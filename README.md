@@ -38,7 +38,7 @@ Learn the Medallion Architecture through hands-on practice:
    - Click "Create"
 
 2. **Run the notebook**:
-   - Navigate to `Main_Pipeline.ipynb`
+   - Navigate to `main_pipeline.ipynb`
    - Start your cluster
    - Run cells sequentially
    - The notebook auto-detects Git Repos and loads CSVs directly! 🎉
@@ -57,7 +57,7 @@ Learn the Medallion Architecture through hands-on practice:
    - Default path: `/FileStore/tables/`
 
 3. **Upload notebook**:
-   - `Workspace → Import → Main_Pipeline.ipynb`
+   - `Workspace → Import → main_pipeline.ipynb`
 
 4. **Run it**:
    - Start cluster and run all cells
@@ -92,10 +92,10 @@ The **Medallion Architecture** organizes data into three progressive layers:
 - 📋 Order Items → Bronze → Silver → Category Analytics
 
 **Gold Layer Tables:**
-- `gold.customer_analytics` - Lifetime value, segmentation
-- `gold.product_performance` - Sales metrics, rankings
-- `gold.monthly_revenue` - Time-series analysis
-- `gold.category_performance` - Category-level KPIs
+- `demo.gold.customer_analytics` - Lifetime value, segmentation
+- `demo.gold.product_performance` - Sales metrics, rankings
+- `demo.gold.monthly_revenue` - Time-series analysis
+- `demo.gold.category_performance` - Category-level KPIs
 
 ---
 
@@ -129,7 +129,7 @@ Once you've run the pipeline, try these queries:
 
 ```sql
 -- Top 10 customers by total spend
-SELECT * FROM gold.customer_analytics
+SELECT * FROM demo.gold.customer_analytics
 ORDER BY lifetime_value DESC
 LIMIT 10;
 
@@ -137,11 +137,11 @@ LIMIT 10;
 SELECT 
   TO_DATE(month_start_date) as month,
   ROUND(net_revenue, 2) as revenue
-FROM gold.monthly_revenue
+FROM demo.gold.monthly_revenue
 ORDER BY month DESC;
 
 -- Product performance
-SELECT * FROM gold.product_performance
+SELECT * FROM demo.gold.product_performance
 WHERE total_quantity_sold > 5
 ORDER BY total_revenue DESC;
 ```
@@ -152,7 +152,7 @@ ORDER BY total_revenue DESC;
 
 ### For Complete Beginners
 
-1. Start with `Main_Pipeline.ipynb`
+1. Start with `main_pipeline.ipynb`
 2. Focus on understanding the Bronze → Silver → Gold progression
 3. Run each cell and read the explanations
 4. Try modifying simple SQL queries
@@ -162,31 +162,38 @@ ORDER BY total_revenue DESC;
 1. Review the SQL-based transformations in the main pipeline
 2. Compare traditional database patterns to Delta Lake
 3. Explore the advanced joins and aggregations in the Gold layer
-4. Study `Best_Practices.ipynb` for production patterns
+4. Study `best_practices.ipynb` for production patterns
 
 ### For Python/PySpark Developers
 
 1. Review the PySpark CSV loading pattern in the Bronze layer
 2. Study DataFrame transformations in Silver layer
 3. Experiment with custom aggregations in Gold layer
-4. Explore advanced patterns in `Best_Practices.ipynb`
+4. Explore advanced patterns in `best_practices.ipynb`
 
 ---
 
-## 🔐 Unity Catalog Support
+## 🔐 Unity Catalog (3-Level Namespacing)
 
-### Community Edition (Free):
-- Uses **Hive metastore** by default ✅
-- All code works out-of-the-box
-- Tables like: `bronze.customers`, `silver.orders`, `gold.customer_analytics`
+This repository uses **Unity Catalog** with 3-level namespacing:
 
-### Paid Workspaces with Unity Catalog:
-The notebooks include comments showing how to:
-- Create schemas: `CREATE SCHEMA IF NOT EXISTS catalog.bronze`
-- Use three-level namespacing: `catalog.bronze.customers`
-- Store CSVs in Volumes: `/Volumes/catalog/schema/volume`
+```
+catalog.schema.table
+   ↓      ↓      ↓
+  demo.bronze.customers
+```
 
-**The patterns you learn here work on both!**
+### Configuration:
+- **Catalog**: `demo` (configurable via widget)
+- **Schemas**: `bronze`, `silver`, `gold`
+- **Tables**: `customers`, `products`, `orders`, `order_items`
+
+### Examples:
+- `demo.bronze.customers` - Raw customer data
+- `demo.silver.orders` - Cleaned order data
+- `demo.gold.customer_analytics` - Business metrics
+
+**Works on Community Edition and all paid workspaces!** ✅
 
 ---
 
@@ -195,23 +202,23 @@ The notebooks include comments showing how to:
 ### Time Travel
 ```sql
 -- View table history
-DESCRIBE HISTORY silver.customers LIMIT 5;
+DESCRIBE HISTORY demo.silver.customers LIMIT 5;
 
 -- Query previous version
-SELECT * FROM silver.customers VERSION AS OF 1;
+SELECT * FROM demo.silver.customers VERSION AS OF 1;
 ```
 
 ### Schema Evolution
 ```python
 # Add new columns safely
 df = df.withColumn("new_column", lit(None))
-df.write.mode("append").option("mergeSchema", "true").saveAsTable("silver.orders")
+df.write.mode("append").option("mergeSchema", "true").saveAsTable("demo.silver.orders")
 ```
 
 ### Upserts (Merge Operations)
 ```sql
-MERGE INTO silver.customers target
-USING bronze.customers_new source
+MERGE INTO demo.silver.customers target
+USING demo.bronze.customers_new source
 ON target.customer_id = source.customer_id
 WHEN MATCHED THEN UPDATE SET *
 WHEN NOT MATCHED THEN INSERT *;
@@ -237,7 +244,7 @@ After completing this workshop:
 3. **Add ML**: Build machine learning models on your clean data
 4. **Optimize**: Study advanced performance tuning and cost optimization
 5. **Production**: Learn about CI/CD, testing, and monitoring for data pipelines
-6. **Check Best Practices**: Open `Best_Practices.ipynb` for production patterns
+6. **Check Best Practices**: Open `best_practices.ipynb` for production patterns
 
 ---
 
