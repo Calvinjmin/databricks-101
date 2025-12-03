@@ -38,10 +38,11 @@ Learn the Medallion Architecture through hands-on practice:
    - Click "Create"
 
 2. **Run the notebook**:
-   - Navigate to `main_pipeline.ipynb`
+   - Navigate to `src/main_pipeline.ipynb`
    - Start your cluster
+   - Customize widgets (catalog, bronze_db, silver_db, gold_db) if needed
    - Run cells sequentially
-   - The notebook auto-detects Git Repos and loads CSVs directly! 🎉
+   - The notebook auto-detects Git Repos, copies CSVs to Volume, and loads into Delta! 🎉
 
 **No manual CSV upload required!**
 
@@ -57,7 +58,7 @@ Learn the Medallion Architecture through hands-on practice:
    - Default path: `/FileStore/tables/`
 
 3. **Upload notebook**:
-   - `Workspace → Import → main_pipeline.ipynb`
+   - `Workspace → Import → src/main_pipeline.ipynb`
 
 4. **Run it**:
    - Start cluster and run all cells
@@ -92,10 +93,10 @@ The **Medallion Architecture** organizes data into three progressive layers:
 - 📋 Order Items → Bronze → Silver → Category Analytics
 
 **Gold Layer Tables:**
-- `demo.gold.customer_analytics` - Lifetime value, segmentation
-- `demo.gold.product_performance` - Sales metrics, rankings
-- `demo.gold.monthly_revenue` - Time-series analysis
-- `demo.gold.category_performance` - Category-level KPIs
+- `{catalog}.{gold_db}.customer_analytics` - Lifetime value, segmentation
+- `{catalog}.{gold_db}.product_performance` - Sales metrics, rankings
+- `{catalog}.{gold_db}.monthly_revenue` - Time-series analysis
+- `{catalog}.{gold_db}.category_performance` - Category-level KPIs
 
 ---
 
@@ -128,20 +129,23 @@ The **Medallion Architecture** organizes data into three progressive layers:
 Once you've run the pipeline, try these queries:
 
 ```sql
+%sql
 -- Top 10 customers by total spend
-SELECT * FROM demo.gold.customer_analytics
+SELECT * FROM {catalog}.{gold_db}.customer_analytics
 ORDER BY lifetime_value DESC
 LIMIT 10;
 
+%sql
 -- Monthly revenue trend
 SELECT 
   TO_DATE(month_start_date) as month,
   ROUND(net_revenue, 2) as revenue
-FROM demo.gold.monthly_revenue
+FROM {catalog}.{gold_db}.monthly_revenue
 ORDER BY month DESC;
 
+%sql
 -- Product performance
-SELECT * FROM demo.gold.product_performance
+SELECT * FROM {catalog}.{gold_db}.product_performance
 WHERE total_quantity_sold > 5
 ORDER BY total_revenue DESC;
 ```
@@ -152,30 +156,30 @@ ORDER BY total_revenue DESC;
 
 ### For Complete Beginners
 
-1. Start with `main_pipeline.ipynb`
+1. Start with `src/main_pipeline.ipynb`
 2. Focus on understanding the Bronze → Silver → Gold progression
 3. Run each cell and read the explanations
-4. Try modifying simple SQL queries
+4. Try modifying simple SQL queries (all SQL cells use `%sql` magic command)
 
 ### For SQL Developers
 
-1. Review the SQL-based transformations in the main pipeline
+1. Review the SQL-based transformations in the main pipeline (look for `%sql` cells)
 2. Compare traditional database patterns to Delta Lake
 3. Explore the advanced joins and aggregations in the Gold layer
-4. Study `best_practices.ipynb` for production patterns
+4. Study `src/best_practices.ipynb` for production patterns
 
 ### For Python/PySpark Developers
 
-1. Review the PySpark CSV loading pattern in the Bronze layer
+1. Review the PySpark CSV loading pattern and Volume integration in Bronze layer
 2. Study DataFrame transformations in Silver layer
 3. Experiment with custom aggregations in Gold layer
-4. Explore advanced patterns in `best_practices.ipynb`
+4. Explore advanced patterns in `src/best_practices.ipynb`
 
 ---
 
-## 🔐 Unity Catalog (3-Level Namespacing)
+## 🔐 Unity Catalog (3-Level Namespacing) + Volumes
 
-This repository uses **Unity Catalog** with 3-level namespacing:
+This repository uses **Unity Catalog** with 3-level namespacing and **Volumes** for data storage:
 
 ```
 catalog.schema.table
@@ -183,15 +187,27 @@ catalog.schema.table
   demo.bronze.customers
 ```
 
-### Configuration:
-- **Catalog**: `demo` (configurable via widget)
-- **Schemas**: `bronze`, `silver`, `gold`
-- **Tables**: `customers`, `products`, `orders`, `order_items`
+### Configuration Widgets:
+- **catalog**: Unity Catalog name (default: "demo")
+- **bronze_db**: Bronze schema name (default: "bronze")
+- **silver_db**: Silver schema name (default: "silver")
+- **gold_db**: Gold schema name (default: "gold")
+
+### Volume Structure:
+```
+/Volumes/{catalog}/{bronze_db}/ecommerce/
+├── files/
+│   ├── customers/customers.csv
+│   ├── products/products.csv
+│   ├── orders/orders.csv
+│   └── order_items/order_items.csv
+└── downloads/
+```
 
 ### Examples:
-- `demo.bronze.customers` - Raw customer data
-- `demo.silver.orders` - Cleaned order data
-- `demo.gold.customer_analytics` - Business metrics
+- `{catalog}.{bronze_db}.customers` - Raw customer data
+- `{catalog}.{silver_db}.orders` - Cleaned order data
+- `{catalog}.{gold_db}.customer_analytics` - Business metrics
 
 **Works on Community Edition and all paid workspaces!** ✅
 
@@ -201,24 +217,27 @@ catalog.schema.table
 
 ### Time Travel
 ```sql
+%sql
 -- View table history
-DESCRIBE HISTORY demo.silver.customers LIMIT 5;
+DESCRIBE HISTORY {catalog}.{silver_db}.customers LIMIT 5;
 
+%sql
 -- Query previous version
-SELECT * FROM demo.silver.customers VERSION AS OF 1;
+SELECT * FROM {catalog}.{silver_db}.customers VERSION AS OF 1;
 ```
 
 ### Schema Evolution
 ```python
 # Add new columns safely
 df = df.withColumn("new_column", lit(None))
-df.write.mode("append").option("mergeSchema", "true").saveAsTable("demo.silver.orders")
+df.write.mode("append").option("mergeSchema", "true").saveAsTable(f"{catalog}.{silver_db}.orders")
 ```
 
 ### Upserts (Merge Operations)
 ```sql
-MERGE INTO demo.silver.customers target
-USING demo.bronze.customers_new source
+%sql
+MERGE INTO {catalog}.{silver_db}.customers target
+USING {catalog}.{bronze_db}.customers_new source
 ON target.customer_id = source.customer_id
 WHEN MATCHED THEN UPDATE SET *
 WHEN NOT MATCHED THEN INSERT *;
