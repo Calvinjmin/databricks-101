@@ -1,0 +1,12 @@
+customer_id,first_name,last_name,email,phone,address,city,state,zip_code,country,registration_date,customer_segment
+1,James,Smith,james.smith123@example.com,+1-555-123-4567,123 Main St,New York,NY,10001,USA,2022-01-15,Premium
+2,Mary,Johnson,mary.johnson456@example.com,+1-555-234-5678,456 Oak Ave,Los Angeles,CA,90001,USA,2022-02-20,Standard
+3,John,Williams,john.williams789@example.com,+1-555-345-6789,789 Pine Blvd,Chicago,IL,60601,USA,2022-03-10,Standard
+4,Patricia,Brown,patricia.brown101@example.com,+1-555-456-7890,101 Maple Dr,Houston,TX,77001,USA,2022-04-05,Basic
+5,Robert,Jones,robert.jones202@example.com,+1-555-567-8901,202 Cedar St,Phoenix,AZ,85001,USA,2022-05-12,Premium
+6,Jennifer,Garcia,jennifer.garcia303@example.com,+1-555-678-9012,303 Elm Ave,Philadelphia,PA,19019,USA,2022-06-18,Standard
+7,Michael,Miller,michael.miller404@example.com,+1-555-789-0123,404 Birch Blvd,San Antonio,TX,78201,USA,2022-07-22,Basic
+8,Linda,Davis,linda.davis505@example.com,+1-555-890-1234,505 Walnut Dr,San Diego,CA,92101,USA,2022-08-30,Standard
+9,William,Rodriguez,william.rodriguez606@example.com,+1-555-901-2345,606 Spruce St,Dallas,TX,75201,USA,2022-09-14,Premium
+10,Elizabeth,Martinez,elizabeth.martinez707@example.com,+1-555-012-3456,707 Ash Ave,San Jose,CA,95101,USA,2022-10-25,Standard
+

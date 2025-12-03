@@ -1,0 +1,17 @@
+product_id,product_name,category,brand,price,stock_quantity,is_active
+1,TechPro Laptop,Electronics,TechPro,1299.99,50,true
+2,BrandA Smartphone,Electronics,BrandA,899.99,120,true
+3,Premium Headphones,Electronics,Premium,249.99,200,true
+4,Generic T-Shirt,Clothing,Generic,19.99,500,true
+5,BrandB Jeans,Clothing,BrandB,79.99,300,true
+6,EcoFriendly Jacket,Clothing,EcoFriendly,129.99,150,true
+7,HomeStyle Lamp,Home & Garden,HomeStyle,49.99,80,true
+8,Premium Chair,Home & Garden,Premium,299.99,45,true
+9,Generic Basketball,Sports,Generic,29.99,100,true
+10,BrandC Yoga Mat,Sports,BrandC,39.99,200,true
+11,TechPro Tablet,Electronics,TechPro,599.99,75,true
+12,Generic Fiction Novel,Books,Generic,14.99,400,true
+13,Premium Cookbook,Books,Premium,34.99,150,true
+14,BrandD LEGO Set,Toys,BrandD,89.99,60,true
+15,EcoFriendly Doll,Toys,EcoFriendly,24.99,180,true
+
